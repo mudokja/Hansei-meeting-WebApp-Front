@@ -1,4 +1,3 @@
-import MetaHead from '@/components/MetaHead';
 import Login from '@/components/auth/Login';
 import { hasCookie, deleteCookie } from 'cookies-next';
 import { NextApiRequest, NextApiResponse } from 'next';
