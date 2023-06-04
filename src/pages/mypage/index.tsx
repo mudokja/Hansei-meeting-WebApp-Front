@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { type } from 'os';
-
+import { getCookie } from 'cookies-next';
+import { GetServerSidePropsContext } from 'next';
 
 
 
@@ -109,22 +109,21 @@ const MyTitle = styled.h2` /*마이페이지*/
 
 
 type Content = { /*이름, 학과, 아이디 타입지정*/
-name: string;
+name?: string;
 id: string;
-major: string;
-grade: number;
-no: number;
+major?: string;
+grade?: number;
+no?: number;
 };
 
-const Contents: Content[] = [
+const Contents: Content =
   {
     name:'홍길동',
     id: 'Hong1234',
     major: 'ict',
     grade: 4,
     no: 123456789
-  },
-]
+  }
 
 const RequestButton = styled.button` /*정보변경 버튼*/
   width: 100%;
@@ -138,9 +137,8 @@ const RequestButton = styled.button` /*정보변경 버튼*/
 `;
 
 
-const Mypage = ({data}:{data:Content[]}) => {
+const Mypage = ({data}:{data:Content}) => {
   const router = useRouter();
-  const majorname = router.query.Mypage;
   
   return (
        <Div>
@@ -149,16 +147,14 @@ const Mypage = ({data}:{data:Content[]}) => {
       </TitleBox>
         <CategoryBox>
           <CategoryBox2>
-          {data.map((content, index) => (
-            <ContentContainer key={index}>
+            <ContentContainer>
               <ContentTitle>내 정보</ContentTitle>
-              <ContentText>이름: {content.name}</ContentText>
-              <ContentText>아이디: {content.id}</ContentText>
-              <ContentText>학과:{majorname}</ContentText>
-              <ContentText>학년: {content.grade}</ContentText>
-              <ContentText>학번: {content.no}</ContentText>
+              <ContentText>이름: {Contents.name}</ContentText>
+              <ContentText>아이디: {data.id}</ContentText>
+              <ContentText>학과:{Contents.major}</ContentText>
+              <ContentText>학년: {Contents.grade}</ContentText>
+              <ContentText>학번: {Contents.no}</ContentText>
             </ContentContainer>
-          ))}
           
           </CategoryBox2>
           <CategoryBox3>
@@ -177,10 +173,25 @@ const Mypage = ({data}:{data:Content[]}) => {
   );
   };
   export const getServerSideProps
- = async () => {
-  //const res = await fetch('https://api.github.com/repos/vercel/next.js');
-  //const repo = await res.json();
-  return { props: {data: Contents} };
+ = async ({req,res}:GetServerSidePropsContext) => {
+    const seesionIDcookie = `sid=${getCookie('sid',{req,res}) as string}`;
+  const option ={
+    method:'GET',
+    headers:{
+      cookie:seesionIDcookie
+    },
+  }
+  const apiURL=`${process.env.URL}/api/${process.env.NEXT_PUBLIC_VAPI}/mypage`
+  try{
+    const res = await fetch(apiURL,option);
+    const result = await res.json();
+    console.log(result)
+    return {props:{data:result.user}}
+  }catch{
+    return { props: {data: Contents} };
+  }
+  
+  
 };
 
 export default Mypage;

@@ -1,10 +1,9 @@
 import Login from '@/components/auth/Login';
-import { hasCookie, deleteCookie } from 'cookies-next';
-import { NextApiRequest, NextApiResponse } from 'next';
 import Head from 'next/head';
 import React from 'react';
 
 function login() {
+    
     return (
         <>
         <Head>
@@ -16,11 +15,4 @@ function login() {
     );
 }
 
-export function getServerSideProps({req,res}:{req:NextApiRequest, res:NextApiResponse}){
-    if(hasCookie('sid',{req,res})){
-        ('/mainpage')
-    }
-    return {props:{}};
-  }
-  
 export default login;
