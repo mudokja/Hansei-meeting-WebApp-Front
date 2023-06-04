@@ -1,9 +1,13 @@
-import React, { useState }  from 'react';
+import React, { useEffect, useReducer, useState }  from 'react';
 import styled from "styled-components";
 import Link from 'next/link';
 import Image from 'next/image';
 import Sublist from './Sublist';
 import Sublist2 from './Sublist2';
+import { getUserInfo } from '@/pages/mainpage';
+import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
+import { deleteCookie, getCookie, hasCookie, setCookie } from 'cookies-next';
+import { useRouter } from 'next/router';
 
 interface SubMenuProps {
   isOpen: boolean;
@@ -361,24 +365,39 @@ const majorlist7 = [
   {name : '스마트콘텐츠마케팅학과'}
 ]
 
-const Mainpage: React.FC = () => {
+const Mainpage= (props:any) => {
+  const router= useRouter()
+  console.log(props)
   const [subMenuOpen, setSubMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn]=useState(false);
+  const queryClient = useQueryClient();
+  const [isLoggedIn, setIsLoggedIn]=useState(props.userData?true:false);
   const username ="테스트이름";
-
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setIsLoggedIn(!isLoggedIn)
-  };
+    const res = await fetch(`/api/${process.env.NEXT_PUBLIC_VAPI}/login`,{method:"DELETE"})
+    if(res.status===404){
+      setIsLoggedIn(!isLoggedIn)
+      console.log('로그아웃실패')
+    }
+    if(res.status===204){
+      queryClient.invalidateQueries({queryKey:['userInfo']});
+    }
+      
+  }
 
   const handleLogin=()=>{
-    setIsLoggedIn(!isLoggedIn)
+    if(props.userData['id']){
+      setIsLoggedIn(!isLoggedIn)
+    }else{
+      router.push('/login')
+    }
   }
 
 
   return (
     <MainContainer>
       <TopBox>
-      <Link href={'/a'}><Logo width={75} height={75} alt='' src="/logo2.png" /></Link>
+      <Link href={'/'}><Logo width={75} height={75} alt='' src="/logo2.png" /></Link>
        <Sublist2 title={majorlist} menuName={'신학부'} />
        <Sublist2 title={majorlist2} menuName={'인문사화과학부'} />
        <Sublist2 title={majorlist3} menuName={'IT학부'} />
@@ -390,7 +409,7 @@ const Mainpage: React.FC = () => {
         <LoginContainer>
           {isLoggedIn && (
             <>
-              <Link href={'/mypage'}><Username>{username}</Username></Link>
+              <Link href={'/mypage'}><Username>{props.userData['id']||''}님</Username></Link>
               <LoginButton onClick={handleLogout}>로그아웃</LoginButton>
             </>
           )}
@@ -401,7 +420,7 @@ const Mainpage: React.FC = () => {
       <BottomWrapper>
         <CategoryBox>
         <CategoryTitle> 자유게시판 </CategoryTitle>
-        {frontdata.map((data)=> <InnerBox href={data.url}>{data.title}</InnerBox>)}
+        {frontdata.map((data)=> <InnerBox key={data.title} href={data.url}>{data.title}</InnerBox>)}
         <Link href={'/board'}><RequestButton>더보기</RequestButton></Link>
         </CategoryBox>
 
