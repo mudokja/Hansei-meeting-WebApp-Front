@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 export default function Home() {
   const router=useRouter();
   useEffect(()=>{
-    hasCookie('sid')?router.replace('/mainpage'):router.replace('/login', '/')
+    router.push('/login')
   },[])
   
   return (
