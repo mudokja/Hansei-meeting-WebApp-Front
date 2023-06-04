@@ -70,7 +70,7 @@ interface MajorList {
   {menuName}
   <SubMenu className="submenu" isOpen={subMenuOpen}>
     <SubMenuList>
-      {title.map((data)=><Link href={`/major/${data.name}`}><SubMenuItem>{data.name}</SubMenuItem></Link>)}
+      {title.map((data)=><Link key={data.name} href={`/major/${data.name}`}><SubMenuItem>{data.name}</SubMenuItem></Link>)}
     </SubMenuList>
   </SubMenu>
   </ButtonWrapper>
