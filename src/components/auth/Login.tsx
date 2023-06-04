@@ -1,4 +1,4 @@
-import Link from 'next/link';
+ import Link from 'next/link';
 import {useCallback, useState} from "react";
 import styled from "styled-components";
 import { useForm, SubmitHandler  } from "react-hook-form";
@@ -113,13 +113,18 @@ function Login() {
    
       const response = await fetch(apiURL, options);
       if(response.ok){
-        switch(response.status){
-          case 201:
-            router.push(await response.text() )
-            break;
-          case 200:
-            const result = await response.json();
-          }
+        try {
+          switch(response.status){
+            case 201:
+              router.push(await response.text() )
+              break;
+            case 200:
+              const result = await response.text();
+            }
+        } catch (error) {
+          console.log(error)
+        }
+        
         }else{
           setErrorText("이메일 또는 비밀번호를 확인하세요");
         }
