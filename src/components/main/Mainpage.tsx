@@ -9,7 +9,7 @@ interface SubMenuProps {
   isOpen: boolean;
 }
 
-const MainContainer = styled.div`
+const MainContainer = styled.div` //화면 전체
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -17,14 +17,14 @@ const MainContainer = styled.div`
   background-color:#F6FEFF;
 `;
 
-const TwoBox = styled.div` /*CategoryBox3, 4 묶음*/
+const TwoBox = styled.div` /*CategoryBox3, 4(별점순, 활동순) 묶음*/
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 `;
 
-const TopBox = styled.div`
+const TopBox = styled.div` //헤더 전체 부분
   position: absolute;
   width: 100%;
   height: 70px;
@@ -33,14 +33,14 @@ const TopBox = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: black;
+  background-color: #464444;
 `;
 
-const Logo = styled(Image)`
+const Logo = styled(Image)` //로고
   margin-left: 30px;
 `;
 
-const ButtonWrapper = styled.div`
+const ButtonWrapper = styled.div` //헤더 학부 부분
   margin: 0 0.5rem;
   width: 6.875rem;
   height: 2.5rem;
@@ -85,13 +85,13 @@ const SubMenuItem = styled.li`
   padding: 0.25rem 0;
 `;
 
-const BottomWrapper = styled.div`
+const BottomWrapper = styled.div` //카테고리 박스 전체 묶음
   display: flex;
   justify-content: center;
   margin-top: 4rem;
 `;
 
-const CategoryBox = styled.div`
+const CategoryBox = styled.div` //자유게시판
   background-color: #F6FFF1;
   height: 687px;
   display: flex;
@@ -106,7 +106,7 @@ const CategoryBox = styled.div`
   padding-right: 50px;
   `;
  
-const CategoryBox2 = styled.div`
+const CategoryBox2 = styled.div` //오늘의 일정
   width: 18.75rem;
   height: 20.75rem;
   background-color: #F6FFF1;
@@ -126,7 +126,7 @@ const CategoryBox2 = styled.div`
     font-weight: bolder;
   `;
 
-const CategoryBox3 = styled.div`
+const CategoryBox3 = styled.div` //별점순
   width: 18.75rem;
   height: 20.75rem;
   background-color: #F6FFF1;
@@ -146,7 +146,7 @@ const CategoryTitle2 = styled.div`
     font-weight: bolder;
   `;
 
-const CategoryBox4 = styled.div`
+const CategoryBox4 = styled.div` //활동순
   width: 18.75rem;
   height: 20.75rem;
   background-color: #F6FFF1;
@@ -166,9 +166,8 @@ const CategoryTitle3 = styled.div`
     font-weight: bolder;
   `;
 
-const InnerBox = styled(Link)`
+const InnerBox = styled(Link)` //자유게시판 글 박스
   text-decoration-line:none;
-  
   font-size: smaller;
   width: 250px;
   height: 30px;
@@ -179,7 +178,7 @@ const InnerBox = styled(Link)`
   padding: 3px;
 `;
 
-const InnerBox2 = styled.div`
+const InnerBox2 = styled.div` //오늘의 일정 글 박스
   font-size: smaller;
   width: 250px;
   height: 25px;
@@ -190,7 +189,7 @@ const InnerBox2 = styled.div`
    border-radius: 5px;
 `;
 
-const InnerBox3 = styled.div`
+const InnerBox3 = styled.div` //별점순 글 박스
 font-size: smaller;
   width: 15.5rem;
   height: 2rem;
@@ -199,7 +198,7 @@ font-size: smaller;
   margin-bottom: 0.5rem; 
 `;
 
-const InnerBox4 = styled(Link)<{width?:number}>`
+const InnerBox4 = styled(Link)<{width?:number}>` //활동순 글 박스
   text-decoration-line:none;
   color: inherit;
   font-size: smaller;
@@ -215,7 +214,7 @@ const CategoryTitle = styled.h2`
   margin-bottom: 1rem;
 `;
 
-const RequestButton = styled.button`
+const RequestButton = styled.button` //자유게시판 더보기 버튼
   margin-top: 10px;
   margin-bottom: 10px;
   background-color: #f2f2f2;
@@ -260,7 +259,7 @@ const LoginButton = styled.button`
 
 //
 
-const frontdata = [
+const frontdata = [ //자유게시판 글 목록
   {
     title: '제목1',
     content: '내용1',
@@ -359,7 +358,7 @@ const majorlist7 = [
   {name : '보건복지 사회적기업학과'},
   {name : '보건융합 사회적경제학과'},
   {name : '스마트콘텐츠마케팅학과'}
-]
+];
 
 const Mainpage: React.FC = () => {
   const [subMenuOpen, setSubMenuOpen] = useState(false);
@@ -378,7 +377,7 @@ const Mainpage: React.FC = () => {
   return (
     <MainContainer>
       <TopBox>
-      <Link href={'/a'}><Logo width={75} height={75} alt='' src="/logo2.png" /></Link>
+      <Link href={'/mainpage'}><Logo width={75} height={75} alt='' src="/logo2.png" /></Link>
        <Sublist2 title={majorlist} menuName={'신학부'} />
        <Sublist2 title={majorlist2} menuName={'인문사화과학부'} />
        <Sublist2 title={majorlist3} menuName={'IT학부'} />
@@ -431,5 +430,6 @@ const Mainpage: React.FC = () => {
     </MainContainer>
   );
 };
+
 
 export default Mainpage;
