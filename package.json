@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^4.29.11",
+    "@toast-ui/editor": "^3.2.2",
+    "@toast-ui/react-editor": "^3.2.3",
     "@types/node": "18.15.11",
     "@types/react": "18.0.32",
     "@types/react-dom": "18.0.11",
@@ -24,6 +26,7 @@
     "react-router-dom": "^6.10.0",
     "react-table": "^7.8.0",
     "styled-components": "^5.3.9",
+    "styled-reset": "^4.4.7",
     "typescript": "5.0.3"
   },
   "devDependencies": {
