@@ -8,9 +8,10 @@ export async function getUserInfo(){
     try {
         if(response.ok){
             const result = await response.json()
-            return result.user
+            console.log(result)
+            return result   
         }else{
-            return {}
+            throw new Error()
         }
     } catch (error) {
         console.log("에러")
@@ -19,19 +20,23 @@ export async function getUserInfo(){
 }
 
 function mainpage() {
-    const { data } = useQuery({ queryKey: ['userInfo'], queryFn: getUserInfo ,})
     return (
-        <Mainpage userData={data}/>
+        <Mainpage />
     );
 }
-export async function getStaticProps() {
-    const queryClient = new QueryClient()
-    await queryClient.prefetchQuery({queryKey:['userInfo'], queryFn:()=>{return {}},})
-    return {
-      props: {
-        dehydratedState: dehydrate(queryClient),
-      },
-    }
-  }
+// export async function getStaticProps() {
+//     const queryClient = new QueryClient()
+//     await queryClient.prefetchQuery({
+//         queryKey: ['userInfo'],
+//         queryFn: getUserInfo,
+//         initialData:"로그인실패",
+//         staleTime:0,
+//       })
+//     return {
+//       props: {
+//         dehydratedState: dehydrate(queryClient),
+//       },
+//     }
+//   }
 
 export default mainpage;

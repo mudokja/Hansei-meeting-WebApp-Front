@@ -111,18 +111,18 @@ const MyTitle = styled.h2` /*마이페이지*/
 type Content = { /*이름, 학과, 아이디 타입지정*/
 name?: string;
 id: string;
-major?: string;
+department?: string;
 grade?: number;
-no?: number;
+studentId?: string;
 };
 
 const Contents: Content =
   {
     name:'홍길동',
     id: 'Hong1234',
-    major: 'ict',
+    department: 'ict',
     grade: 4,
-    no: 123456789
+    studentId: "123456789"
   }
 
 const RequestButton = styled.button` /*정보변경 버튼*/
@@ -149,11 +149,11 @@ const Mypage = ({data}:{data:Content}) => {
           <CategoryBox2>
             <ContentContainer>
               <ContentTitle>내 정보</ContentTitle>
-              <ContentText>이름: {Contents.name}</ContentText>
+              <ContentText>이름: {data.name||"정보없음"}</ContentText>
               <ContentText>아이디: {data.id}</ContentText>
-              <ContentText>학과:{Contents.major}</ContentText>
-              <ContentText>학년: {Contents.grade}</ContentText>
-              <ContentText>학번: {Contents.no}</ContentText>
+              <ContentText>학과: {data.department||"정보없음"}</ContentText>
+              <ContentText>학년: {data.grade||"정보없음"}</ContentText>
+              <ContentText>학번: {data.studentId||"정보없음"}</ContentText>
             </ContentContainer>
           
           </CategoryBox2>
@@ -186,7 +186,7 @@ const Mypage = ({data}:{data:Content}) => {
     const res = await fetch(apiURL,option);
     const result = await res.json();
     console.log(result)
-    return {props:{data:result.user}}
+    return {props:{data:result}}
   }catch{
     return { props: {data: Contents} };
   }

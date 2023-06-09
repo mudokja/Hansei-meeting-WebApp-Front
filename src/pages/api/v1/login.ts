@@ -80,6 +80,7 @@ export default async function handler(
             }else{
               console.log('뭔가의 오류')
               deleteCookie('sid',{req,res})
+              console.log(result)
             }
             
           }else{

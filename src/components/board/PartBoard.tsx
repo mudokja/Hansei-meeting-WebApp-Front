@@ -22,7 +22,8 @@ const Explain = styled.p`
 `;
 
 const Table = styled.table`
- width: 1300px;
+ width: 100%;
+ min-width:850px;
  margin: 0 auto;
  margin-top: 20px;
 border-collapse: collapse;
@@ -34,10 +35,17 @@ const Tbody = styled.tbody`
  border: none;
 `;
 
-type Board = { // 게시판 제목 타입
-  title: string;
-};
 
+interface Post{ // 게시글의 타입
+  id: number;
+  title: string;
+  coment: number;
+  author: string;
+  date: string;
+  views?: number;
+  likes?: number;
+  timestamp?: number;
+};
 
 const Td = styled.td` // 게시글의 내용 부분
   height: 48px;
@@ -77,12 +85,19 @@ const Th = styled.th` // 게시글의 윗 머리 부분
   }
 `;
 
-function Board ({data}:any) {
+type Props={
+    data?:Post[], 
+    boardTitle:boolean
+}
+
+function Board ({boardTitle=true,data=[]}:Props) {
     return (  
       <InnerBox>                 
       <Div>
+        {boardTitle&&(<>
         <Title>자유게시판</Title>
         <Explain>다과회의 자유게시판입니다.</Explain>
+        </>)}
         <Table>
         <Tbody>
           <tr>
@@ -93,7 +108,7 @@ function Board ({data}:any) {
             <Th>조회수</Th>
             <Th>좋아요</Th>
           </tr>
-          {data.map((post :any) => (
+          {data?.map((post) => (
           <tr key={post.id}>
             <Td>{post.id}</Td>
             <Td>

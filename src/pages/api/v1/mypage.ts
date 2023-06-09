@@ -3,8 +3,11 @@ import { getCookie, hasCookie, setCookie } from 'cookies-next';
 
 const LOGINAPIURL='/user/mypage'
 const APIURL= `${process.env.APIENDPOINT}${LOGINAPIURL}` as string
-type Data = {
-    data:any
+type Data =  {
+  id: string;
+  department?: string;
+  studentId?: string;
+  name?: string;
 }
 
 export default async function handler(
@@ -27,7 +30,14 @@ export default async function handler(
             if(response?.ok)
             {
               const result = await response.json();
-              res.status(200).json(result);
+              const passResult = {
+                id:result.user.id,
+                department:result.user.department,
+                studentId:result.user.studentId,
+                name:result.user.firstName+result.user.lastName,
+              }
+              console.log(passResult)
+              res.status(200).json(passResult);
             }else{
               console.log("백엔드 인증실패")
               res.status(401).end()
@@ -39,7 +49,7 @@ export default async function handler(
           }
           
           
-        } catch (error) {console.log('뭔가의 에러')}
+        } catch (error) {console.log('뭔가의 에러'),res.status(500).end()}
         
     }
     

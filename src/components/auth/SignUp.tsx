@@ -63,20 +63,21 @@ const Container = styled.div`
   background-color: #F6FEFF;
 `;
 
-const ErrorText= styled.span<{fontSize?:number}>`
-  display:inline-block;
+const ErrorText= styled.div<{fontSize?:number}>`
+  display:block;
   color:chocolate;
   font-size:${(props)=>(props.fontSize||14)+'px'};
   text-decoration:none;
-  height:8px;
-  width:100%;
+  height:20px;
 `;
 const FieldWapper=styled.div`
+    display:block;
     max-width:800px;
     min-width:200px;
+    width:557px;
 `;
 
-const SignUpButton = styled.button`
+export const SignUpButton = styled.button`
   background-color: #000000;
   color: #fff;
   padding: 12px;
@@ -97,12 +98,17 @@ const PageLinkText = styled.span`
   text-decoration:none;
   align-self:flex-start;
 `;
-const Title = styled.h1`
+const Title = styled.div`
   margin-bottom: 32px;
   font-size: 4rem;
+  font-weight:600;
+  word-break:keep-all;
+  word-wrap:normal;
 `;
 
 interface SignupData {
+  firstName:string;
+  lastName:string;
     email:string;
     emailDomain:string;
     password:string;
@@ -122,7 +128,9 @@ function SignUp() {
     const { register, formState:{errors,isSubmitting},getValues, handleSubmit,setValue, setError,clearErrors,watch } = useForm<SignupData>({mode:'onBlur'});
     const onSubmit: SubmitHandler<SignupData> =useCallback(async (e)=>{
     const data={
-        email:e.email,
+        firstName:e.firstName,
+        lastName:e.lastName,
+        email:`${e.email}@${e.emailDomain}`,
         password:e.password,
         studentNumber:e.studentNumber,
         userMajor:e.userMajor
@@ -169,7 +177,12 @@ function SignUp() {
                     <FieldWapper>
                     <StyledLabel>이메일</StyledLabel>
                         <EmailField>  
-                        <Field type="text" {...register("email", { required: "이메일은 필수입니다." })} onFocus={()=>clearErrors("email")}/>
+                        <Field type="text" 
+                        placeholder="아이디"
+                        {...register("email", { required: "이메일은 필수입니다.",
+                        pattern:{value:/^[a-zA-Z][a-zA-Z0-9]*$/g,message:"영문자와 숫자만 입력해주세요"}
+                        })} 
+                        onFocus={()=>clearErrors("email")}/>
                         @
                         {watch('emailDomain') === '직접입력' && (
                             <Field
@@ -193,7 +206,8 @@ function SignUp() {
                         </EmailField>
                         {errors.email && <ErrorText>{errors.email.message}</ErrorText>}
                         <StyledLabel>비밀번호</StyledLabel>
-                        <Field type="password" {...register("password", { 
+
+                        <Field type="password"placeholder="비밀번호" {...register("password", { 
                             required: "비밀번호는 필수입니다.",
                             minLength:{value:8,message:"8~32자리의 비밀번호를 입력해주세요."},
                             maxLength:{value:32,message:"8~32자리의 비밀번호를 입력해주세요."},
@@ -202,16 +216,26 @@ function SignUp() {
                                 message:"영문자와 숫자가 포함되어야합니다. 일부 특수문자만 입력가능합니다"
                                 },
                             })} 
-                            onFocus={()=>clearErrors("password")}
+                            onFocus={()=>clearErrors(["password","passwordConfirm"])}
                             />
                         {errors.password && <ErrorText>{errors.password.message}</ErrorText>}
+
                         <StyledLabel>비밀번호 재확인</StyledLabel>
                         <Field
                         type="password"
+                        placeholder="비밀번호"
                         {...register("passwordConfirm", { required: "입력한 비밀번호를 확인해주세요" })}
                         onBlur={handlePasswordBlur}
                         />
                         <ErrorText>{errors.passwordConfirm&&errors.passwordConfirm.message}</ErrorText>
+                        <StyledLabel>성함</StyledLabel>
+                        <EmailField>  
+                        <Field type="text" placeholder="성" {...register("firstName", { required: "성을 입력해주세요." })} onFocus={()=>clearErrors("email")}/>
+                         
+                        <Field type="text" placeholder="이름"{...register('lastName',{required:"이름을 입력해주세요"})} 
+                        />
+                        </EmailField>
+                        {errors.firstName && <ErrorText>{errors.firstName.message}</ErrorText>||errors.lastName&&<ErrorText>{errors.lastName.message}</ErrorText>}
                         <StyledLabel>학번</StyledLabel>
                         <Field
                         type="text"
