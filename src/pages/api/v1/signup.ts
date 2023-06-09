@@ -47,7 +47,8 @@ export default async function handler(
                 {
                     const result = await response.json();
                     console.log(result.message)
-                    res.status(201).redirect('/')
+                    res.setHeader('set-cookie', response.headers.get('set-cookie') as string)
+                    res.redirect(201,'/auth/signupend')
                 
                 }else{
                 const result = await response.json();
