@@ -8,6 +8,7 @@ import { getUserInfo } from '@/pages/mainpage';
 import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import { deleteCookie, getCookie, hasCookie, setCookie } from 'cookies-next';
 import { useRouter } from 'next/router';
+import LoginInfo from './LoginInfo';
 
 interface SubMenuProps {
   isOpen: boolean;
@@ -230,36 +231,7 @@ const RequestButton = styled.button` //자유게시판 더보기 버튼
 `;
 
 //
-const LoginContainer = styled.div`
-  display: block;
-  width:150px;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 5px;
-  background-color: transparent;
-  a {text-decoration: none;};
-`;
 
-const Username = styled.span`
-  font-size: 14px;
-  margin-left: 10px;
-  font-weight:600;
-  word-break:keep-all;
-  color:white;
-  text-decoration: none;
-`;
-
-const LoginButton = styled.button`
-  padding: 10px;
-  font-weight:1000;
-  font-style:bold;
-  box-sizing:border-box;
-  color:white;
-  word-break:keep-all;
-  background-color: transparent;
-  border: none;
-  
-`;
 
 //
 
@@ -364,35 +336,13 @@ const majorlist7 = [
   {name : '스마트콘텐츠마케팅학과'}
 ];
 
-const Mainpage= (props:any) => {
+const Mainpage= () => {
   const router= useRouter()
-  console.log(props)
-  const [subMenuOpen, setSubMenuOpen] = useState(false);
-  const queryClient = useQueryClient();
-  const [isLoggedIn, setIsLoggedIn]=useState(props.userData?true:false);
+  const [subMenuOpen, setSubMenuOpen] = useState();
+
+  
   const username ="테스트이름";
-  const handleLogout = async () => {
-    setIsLoggedIn(!isLoggedIn)
-    const res = await fetch(`/api/${process.env.NEXT_PUBLIC_VAPI}/login`,{method:"DELETE"})
-    if(res.status===404){
-      setIsLoggedIn(!isLoggedIn)
-      console.log('로그아웃실패')
-    }
-    if(res.status===204){
-      queryClient.invalidateQueries({queryKey:['userInfo']});
-    }
-      
-  }
-
-  const handleLogin=()=>{
-    if(props.userData['id']){
-      setIsLoggedIn(!isLoggedIn)
-    }else{
-      router.push('/login')
-    }
-  }
-
-
+  
   return (
     <MainContainer>
       <TopBox>
@@ -405,15 +355,7 @@ const Mainpage= (props:any) => {
        <Sublist2 title={majorlist6} menuName={'디자인학부'} />
        <Sublist2 title={majorlist7} menuName={'계약학과'} />
         <ButtonWrapper>요청하기</ButtonWrapper>
-        <LoginContainer>
-          {isLoggedIn && (
-            <>
-              <Link href={'/mypage'}><Username>{props.userData['id']||''}님</Username></Link>
-              <LoginButton onClick={handleLogout}>로그아웃</LoginButton>
-            </>
-          )}
-          {!isLoggedIn && <LoginButton onClick={handleLogin}>로그인</LoginButton>}
-        </LoginContainer>
+        <LoginInfo/>
         </TopBox>
 
       <BottomWrapper>
