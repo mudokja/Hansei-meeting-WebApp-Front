@@ -18,8 +18,9 @@ function LoginInfo() {
         }
         if(res.status===204){
           remove();
+          setIsLogIn(false)
         }
-        setIsLogIn(false)
+
       }
       
       const handleLogin=()=>{

@@ -11,8 +11,7 @@ import React, { useEffect, useState } from 'react';
             if(dateTypeState){
                 setTypeDate(!typeDate)
             }else {
-                console.log(dateTypeState)
-                const fullStringDate=new Date(dateString).toLocaleString('ko-KR', { timeZone: 'UTC' })
+                const fullStringDate=new Date(dateString).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })
                 formattedDate =fullStringDate
                 setDate(formattedDate)
                 setDateTypeState(true);
