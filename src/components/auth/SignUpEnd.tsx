@@ -48,7 +48,7 @@ const SignUpEnd = () => {
   return (
     <Container>
       <Title>회원가입 완료!</Title>
-      <Message>{data.id}님 회원가입이 성공적으로 완료되었습니다.</Message>
+      <Message>{data?.id}님 회원가입이 성공적으로 완료되었습니다.</Message>
       <Button href={'/mainpage'}>메인으로 이동</Button>
     </Container>
   );

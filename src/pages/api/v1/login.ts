@@ -79,13 +79,15 @@ export default async function handler(
               console.log(`${result.id} 로그인함`)
             }else{
               console.log('뭔가의 오류')
+              res.status(401).end()
               deleteCookie('sid',{req,res})
               console.log(result)
             }
             
           }else{
             const result = await response.json();
-  
+            console.error(result)
+            res.status(401).end()
             console.log(result," 백엔드 요청에러")
           }
         } catch (error) {
