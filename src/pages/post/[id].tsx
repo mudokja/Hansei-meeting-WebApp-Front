@@ -1,24 +1,87 @@
 
 import Board from '@/components/Board';
-import PartBoard from '@/components/board/PartBoard';
+import { SignUpButton } from '@/components/auth/SignUp';
+import BoardPageBar from '@/components/board/BoardPageBar';
+import PartBoard, { Post } from '@/components/board/PartBoard';
 import PostViewer from '@/components/post/PostViewer';
 import useParsingDate from '@/hook/useParsingDate';
+import { useGetPostsData } from '@/hook/usePostsData';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
-import React, { useMemo, useState } from 'react';
+import { useRouter } from 'next/router';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-const Viewer =dynamic(()=>import("@/components/post/PostViewer"),{ssr:false,loading: () => <p>글을 불러오는 중입니다</p>,})
-function postView({data}:{data:any}) {
+import { getUserInfo } from '../mainpage';
+import { getCookie } from 'cookies-next';
+import BoardHeader from '@/components/board/BoardHeader';
+
+
+
+//const Viewer=dynamic(()=>import("@/components/post/PostViewer"),{ssr:false,loading: () => <p>글을 불러오는 중입니다</p>,})
+function postView({data: postData}:{data:any}) {
   const [isPost, setIsPost] = useState(null);
-  const {postid,  author, title, date, content} = data;
+  const { postid, author, title, date, content} = postData;
+  const queryClient=useQueryClient()
+  let viewContent = content;
   const [dateString, setDateString] = useParsingDate(date)
- 
+  const router = useRouter();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [data, isLoading, error ]= useGetPostsData({pageNumber:currentPage})
+  const { data:userData } = useQuery({ queryKey: ['userInfo'],staleTime:30000 ,queryFn:getUserInfo, retryDelay:300000, initialData:null, initialDataUpdatedAt:0})
+  const handlePageClick = (number :number) => {
+    
+    router.push({query:{...router.query}},undefined, { shallow: true});
+
+    setCurrentPage(number);
+    
+  };
+  async function handlePostDelete(){
+    const APIURL=`${process.env.NEXT_PUBLIC_URL}/api/${process.env.NEXT_PUBLIC_VAPI}/post/${postid}`
+    const seesionIDcookie = `sid=${getCookie('sid') as string}`;
+    
+    const option ={
+      method:'DELETE',
+      headers:{
+        cookie:seesionIDcookie
+      },
+    }
+      const response = await fetch(APIURL,option)
+      if(response.ok){
+        try {
+          
+          const result = await response.text()
+          switch(response.status){
+            case 200:
+              queryClient.invalidateQueries(['viewPosts'])
+              alert("게시글 삭제성공")
+              router.push('/board')
+              break;
+            case 404:
+            alert("게시글 삭제에 실패했습니다")
+              break;
+            }
+        } catch (error) {
+          console.log(error)
+        }
+        }
+      }
+  function handlePostShow(postid:string|number|null): void{
+    
+    const show = data.find((post:any)=>post.postid===postid)
+    //console.log(show)
+    viewContent=show.content
+    
+    
+    ;
+  }
   // if (!isPost) {
   //   return <div>Loading...</div>;
 //}
+  const Viewer=useMemo(()=>dynamic(()=>import("@/components/post/PostViewer"),{ssr:false,loading: () => <p>글을 불러오는 중입니다</p>,}),[])
 
   return (
     <>
-    <Header>상단 헤더</Header>
+    <BoardHeader/>
     <PostViewContainer>
       
       <ContentViewBox>
@@ -27,13 +90,18 @@ function postView({data}:{data:any}) {
         <PostDate>
           <span onClick={()=>{setDateString()}} >{dateString}</span>
         </PostDate>
-        <Viewer content={content} /> 
+        <Viewer content={viewContent}/>
+        {userData?.id===author&&
+        <SignUpButton onClick={handlePostDelete}>삭제</SignUpButton>
+        }
       </ContentViewBox>
       <Sidebar>
         <h2>다른 게시글 목록</h2>
       </Sidebar>
-      <PartBoard boardTitle={false}/>
+      {!isLoading&&(<PartBoard boardHeader={false} data={data} handlePost={handlePostShow} />)}
+      <BoardPageBar currentPage={currentPage} onClick={handlePageClick} />
     </PostViewContainer>
+    
     </>
     
   );
@@ -47,6 +115,7 @@ export const getServerSideProps
     headers:{
     },
   }
+  console.log("서버사이드")
   const id = params.id
   console.log(id)
   const apiURL=`${process.env.URL}/api/${process.env.NEXT_PUBLIC_VAPI}/post/${id}`
@@ -76,7 +145,7 @@ const Author = styled.div`
   color: #888;
 `
 
-const PostViewContainer = styled.div`
+export const PostViewContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;

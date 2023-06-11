@@ -15,7 +15,8 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "post[dynamic]":["./src/pages/post/[id]"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

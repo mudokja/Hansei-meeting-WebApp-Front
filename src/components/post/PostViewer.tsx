@@ -1,19 +1,28 @@
 import { Viewer } from '@toast-ui/react-editor';
 import dynamic from 'next/dynamic';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 
 type Props = {
     content:string,
-
 };
-const ViewerSSR =dynamic(()=>import("@toast-ui/react-editor").then((mod)=>mod.Viewer) ,{ssr:false});
+
+
+
 function PostViewer({content=''}:Props) {
-    
+    const [newContent, setNewContent]=useState(content)
+    const plz=useRef<any>(null)
+    useEffect(()=>{
+        console.log(plz.current)
+        plz.current.getInstance().setMarkdown(content)
+    },[content])
+    // const viewUpdate=()=>{
+        
+    // }
     return (
         <ViewerWapper>
-            <ViewerSSR initialValue={content}/>
+            <Viewer initialValue={content} ref={plz} />
         </ViewerWapper>
     );
 }

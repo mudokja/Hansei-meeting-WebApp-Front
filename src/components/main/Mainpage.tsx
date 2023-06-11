@@ -9,6 +9,7 @@ import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import { deleteCookie, getCookie, hasCookie, setCookie } from 'cookies-next';
 import { useRouter } from 'next/router';
 import LoginInfo from './LoginInfo';
+import { Post } from '../board/PartBoard';
 
 interface SubMenuProps {
   isOpen: boolean;
@@ -27,10 +28,14 @@ const TwoBox = styled.div` /*CategoryBox3, 4 묶음*/
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin-right:20px;
+  @media screen and (max-width: 1120px){
+    order:3;
+  }
 `;
 
-const TopBox = styled.div`
-  position: absolute;
+export const TopBox = styled.div`
+  position: relative;
   width: 100%;
   height: 70px;
   top: 0;
@@ -41,11 +46,11 @@ const TopBox = styled.div`
   background-color: black;
 `;
 
-const Logo = styled(Image)`
+export const Logo = styled(Image)`
   margin-left: 30px;
 `;
 
-const ButtonWrapper = styled.div`
+export const ButtonWrapper = styled.div`
   margin: 0 0.5rem;
   width: 6.875rem;
   height: 2.5rem;
@@ -60,6 +65,7 @@ const ButtonWrapper = styled.div`
   font-size: 0.85rem;
   font-weight: bold;
   position: relative;
+  word-break:keep-all;
 
   &:hover {
     .submenu {
@@ -79,36 +85,41 @@ const SubMenu = styled.div<SubMenuProps>`
   background-color: #F5FEFF;
 `;
 
-const SubMenuList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-`;
 
-const SubMenuItem = styled.li`
-  font-size: 0.85rem;
-  padding: 0.25rem 0;
-`;
 
 const BottomWrapper = styled.div`
   display: flex;
-  justify-content: center;
+  width:100%;
+  justify-content: space-around;
   margin-top: 4rem;
+  flex-direction:row;
+  @media screen and (max-width: 1120px) {
+    flex-direction:row;
+    justify-content:center;
+    flex-wrap: wrap;
+    justify-content:'space-between'
+  }
 `;
 
 const CategoryBox = styled.div`
   background-color: #F6FFF1;
   height: 687px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width:480px;
+  display: block;
   justify-content: center;
   border: solid gray;
   border-radius: 0.5rem;
-  margin-right: 3rem;
+  padding:20px;
+  margin-right: 40px;
   margin-top: 70px;
   padding-left: 50px;
   padding-right: 50px;
+  margin-left:40px;
+  margin-right:40px;
+  @media screen and (max-width: 1120px) {
+    order:0;
+    width:800px;
+  }
   `;
  
 const CategoryBox2 = styled.div`
@@ -116,13 +127,19 @@ const CategoryBox2 = styled.div`
   height: 20.75rem;
   background-color: #F6FFF1;
   display: flex;
+  padding:20px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   border: solid gray;
   border-radius: 0.5rem;
-  margin-right: 3rem;
+  margin-right: 60px;
+  margin-left:20px;
   margin-top: 70px;
+  @media screen and (max-width: 1120px) {
+    margin-right: 120px;
+    order:1
+  }
 `;
 
  const CategoryTitle1 = styled.div`
@@ -141,7 +158,8 @@ const CategoryBox3 = styled.div`
   justify-content: center;
   border: solid gray;
   border-radius: 0.5rem;
-  margin-right: 3rem;
+  margin-right: 20px;
+  margin-left: 40px;
   margin-top: 70px;
 `;
 
@@ -161,7 +179,8 @@ const CategoryBox4 = styled.div`
   justify-content: center;
   border: solid gray;
   border-radius: 0.5rem;
-  margin-right: 3rem;
+  margin-right: auto;
+  margin-left:auto;
   margin-top: 50px;
 `;
 
@@ -175,13 +194,17 @@ const InnerBox = styled(Link)`
   text-decoration-line:none;
   
   font-size: smaller;
-  width: 250px;
+  width: 350px;
   height: 30px;
   background-color: #FFFFF2;
   margin-top: 10px;
   margin-bottom: 10px; /* 각 InnerBox의 아래쪽 간격을 0.5rem으로 설정 */
   border-radius: 15px;
   padding: 3px;
+  color:black;
+  @media screen and (max-width: 1120px) {
+    width:600px;
+  }
 `;
 
 const InnerBox2 = styled.div`
@@ -336,8 +359,11 @@ const majorlist7 = [
   {name : '보건융합 사회적경제학과'},
   {name : '스마트콘텐츠마케팅학과'}
 ]
+type Props={
+  freeData:Post[];
+}
 
-const Mainpage= () => {
+const Mainpage= ({freeData}:Props) => {
   const router= useRouter()
   const [subMenuOpen, setSubMenuOpen] = useState();
 
@@ -360,12 +386,6 @@ const Mainpage= () => {
         </TopBox>
 
       <BottomWrapper>
-        <CategoryBox>
-        <CategoryTitle> 자유게시판 </CategoryTitle>
-        {frontdata.map((data)=> <InnerBox key={data.title} href={data.url}>{data.title}</InnerBox>)}
-        <Link href={'/board'}><RequestButton>더보기</RequestButton></Link>
-        </CategoryBox>
-
         <CategoryBox2>
         <CategoryTitle1> 오늘의 일정 </CategoryTitle1>
         <InnerBox2>✔ 투자론 6주차 과제 제출</InnerBox2>
@@ -373,6 +393,7 @@ const Mainpage= () => {
         <InnerBox2>✔ 비교과프로그램 수강</InnerBox2>
         </CategoryBox2>
 
+        
       <TwoBox>
         <CategoryBox3>
         <CategoryTitle2> 별점순 </CategoryTitle2>
@@ -383,14 +404,31 @@ const Mainpage= () => {
 
         <CategoryBox4>
         <CategoryTitle3> 활동순 </CategoryTitle3>
+        <InnerBox4 width={200} href={'/a'}>정지훈</InnerBox4>{/*이정도는..*/}
         <InnerBox4 width={200} href={'/a'}>변혜림</InnerBox4>
         <InnerBox4 width={200} href={'/a'}>박동주</InnerBox4>
-        <InnerBox4 width={200} href={'/a'}>정지훈</InnerBox4>
         </CategoryBox4>
         </TwoBox>
+
+        <CategoryBox>
+        <BoxBox>
+        <CategoryTitle> 자유게시판 </CategoryTitle>
+
+        {freeData?.map((data:Post)=> <InnerBox key={data.postid} href={`post/${data.postid}`}>{data.title}</InnerBox>)}
+        <Link href={'/board'}><RequestButton>더보기</RequestButton></Link>
+        
+        </BoxBox>
+        </CategoryBox>
       </BottomWrapper>
     </MainContainer>
   );
 };
 
 export default Mainpage;
+
+const BoxBox=styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`

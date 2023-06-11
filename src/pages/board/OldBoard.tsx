@@ -1,40 +1,12 @@
-import BoardPageBar from "@/components/board/BoardPageBar";
-import PartBoard, { Post } from "@/components/board/PartBoard";
-import { useGetPostsData } from "@/hook/usePostsData";
+import Board from "@/components/Board";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext } from "next";
-import { useRouter } from "next/router";
-import { useState } from "react";
-import { PostViewContainer } from "post[dynamic]";
-import BoardHeader from "@/components/board/BoardHeader";
 
 
-
-
-export default function newBoard() {
-  const router = useRouter();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [data, isLoading, error ]= useGetPostsData({pageNumber:currentPage,count:10})
-  const handlePageClick = (number :number) => {
-    
-    router.push({query:{...router.query}},undefined, { shallow: true});
-
-    setCurrentPage(number);
-    
-  };
-  function handlePostShow(postid:string|number|null): void{
-    
-    const show = data.find((post:any)=>post.postid===postid)
-    //console.log(show)
-    ;
-  }
+export default function Home() {
   return (
     <>
-    <BoardHeader/>
-    <PostViewContainer>
- {!isLoading&&(<PartBoard boardHeader={true} data={data} boardTitle="자유" handlePost={handlePostShow} />)}
-      <BoardPageBar currentPage={currentPage} onClick={handlePageClick} />
-    </PostViewContainer >
+ <Board data={[]}/>
     </>
   )
 }
@@ -61,11 +33,20 @@ export const getServerSideProps
  
 };
 
-
+interface Post{ // 게시글의 타입
+  id: number;
+  title: string;
+  coment: number;
+  author: string;
+  date: string;
+  views: number;
+  likes: number;
+  timestamp: number;
+};
 
 const posts: Post[] = [
   {
-    postid: 1,
+    id: 1,
     title: '오늘 진짜 귀여운 고양이 봤어!!',
     coment:5,
     author: '박동주',
@@ -75,7 +56,7 @@ const posts: Post[] = [
     timestamp: Date.now(),
   },
   {
-    postid: 2,
+    id: 2,
     title: '오늘 ',
     coment:5,
     author: '박동주',
@@ -85,7 +66,7 @@ const posts: Post[] = [
     timestamp: Date.now(),
   },
   {
-    postid: 3,
+    id: 3,
     title: '오늘 ',
     coment:5,
     author: '박동주',
@@ -95,7 +76,7 @@ const posts: Post[] = [
     timestamp: Date.now(),
   },
   {
-    postid: 4,
+    id: 4,
     title: '오늘 ',
     coment:5,
     author: '박동주',
@@ -105,7 +86,7 @@ const posts: Post[] = [
     timestamp: Date.now(),
   },
   {
-    postid: 5,
+    id: 5,
     title: '오늘 ',
     coment:5,
     author: '박동주',
@@ -115,7 +96,7 @@ const posts: Post[] = [
     timestamp: Date.now(),
   },
   {
-    postid: 6,
+    id: 6,
     title: '오늘 ',
     coment:5,
     author: '박동주',
@@ -125,7 +106,7 @@ const posts: Post[] = [
     timestamp: Date.now(),
   },
   {
-    postid: 7,
+    id: 7,
     title: '오늘 ',
     coment:5,
     author: '박동주',
@@ -135,7 +116,7 @@ const posts: Post[] = [
     timestamp: Date.now(),
   },
   {
-    postid: 8,
+    id: 8,
     title: '오늘 ',
     coment:5,
     author: '박동주',
@@ -145,7 +126,7 @@ const posts: Post[] = [
     timestamp: Date.now(),
   },
   {
-    postid: 9,
+    id: 9,
     title: '오늘 ',
     coment:5,
     author: '박동주',
@@ -155,7 +136,7 @@ const posts: Post[] = [
     timestamp: Date.now(),
   },
   {
-    postid: 10,
+    id: 10,
     title: '오늘 ',
     coment:5,
     author: '박동주',
@@ -165,7 +146,7 @@ const posts: Post[] = [
     timestamp: Date.now(),
   },
   {
-    postid: 11,
+    id: 11,
     title: '오늘 ',
     coment:5,
     author: '박동주',
@@ -175,7 +156,7 @@ const posts: Post[] = [
     timestamp: Date.now(),
   },
   {
-    postid: 12,
+    id: 12,
     title: '오늘 ',
     coment:5,
     author: '박동주',
@@ -185,7 +166,7 @@ const posts: Post[] = [
     timestamp: Date.now(),
   },
   {
-    postid: 13,
+    id: 13,
     title: '이번주 학식 완전 최고야!!',
     coment:5,
     author: '박동주',
@@ -198,7 +179,4 @@ const posts: Post[] = [
 ];
 
 
-
-const sortedPosts = [...posts].sort((a, b) => b.postid - a.postid);
-
-
+const sortedPosts = [...posts].sort((a, b) => b.id - a.id);

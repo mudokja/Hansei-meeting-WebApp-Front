@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useCallback, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 
 const domainList = ['hansei.ac.kr', 'gmail.com'];
@@ -76,9 +76,8 @@ const FieldWapper=styled.div`
     min-width:200px;
     width:557px;
 `;
-
-export const SignUpButton = styled.button`
-  background-color: #000000;
+export const buttonCss=css`
+   background-color: #000000;
   color: #fff;
   padding: 12px;
   border: none;
@@ -90,6 +89,9 @@ export const SignUpButton = styled.button`
   &:hover {
     background-color: #1a73e8;
   }
+`
+export const SignUpButton = styled.button`
+ ${buttonCss}
 `;
 const PageLinkText = styled.span`
   color: #808080;
@@ -147,14 +149,20 @@ function SignUp() {
     
     const response = await fetch(apiURL, options);
     if(response.ok){
+      
         switch(response.status){
         case 201:
             router.push(await response.text() )
             break;
-        case 200:
-            const result = await response.json();
+        
         }
         }else{
+          switch(response.status){
+            case 409:
+            const result = await response.json();
+            alert(result.error)
+            break;
+          }
         }
     },[])
 

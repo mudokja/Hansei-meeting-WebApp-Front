@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import Link from 'next/link';
+import { Post } from './board/PartBoard';
 
 const InnerBox = styled.div`
   display: flex;
@@ -77,7 +78,7 @@ const Th = styled.th` // 게시글의 윗 머리 부분
   }
 `;
 
-function Board ({data}:any) {
+function Board ({data}:{data:Post[]}) {
     return (  
       <InnerBox>                 
       <Div>

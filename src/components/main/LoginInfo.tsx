@@ -1,5 +1,5 @@
 import { getUserInfo } from '@/pages/mainpage';
-import { useQuery } from '@tanstack/react-query';
+import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import router from 'next/router';
 import React, { useEffect, useState } from 'react';
 import Link  from 'next/link';
@@ -7,17 +7,20 @@ import styled from 'styled-components';
 import { hasCookie } from 'cookies-next';
 
 function LoginInfo() {
-  const { data, isFetched, isStale,isError,isFetchedAfterMount, remove } = useQuery({ queryKey: ['userInfo'],staleTime:30000 ,queryFn:getUserInfo, retryDelay:30000, initialData:null, initialDataUpdatedAt:0})
-
-    const [isLogIn, setIsLogIn]=useState<boolean>((isStale||isFetched));
+  const { data, isFetched, isStale,isSuccess, remove } = useQuery({ queryKey: ['userInfo'],staleTime:300000 ,queryFn:getUserInfo, retryDelay:30000, initialData:null, initialDataUpdatedAt:0})
+    const [isLogIn, setIsLogIn]=useState<boolean>((isFetched||isStale));
+    const queryClient=useQueryClient()
     const handleLogout = async () => {
         const res = await fetch(`/api/${process.env.NEXT_PUBLIC_VAPI}/login`,{method:"DELETE"})
         if(res.status===404){
-          remove();
+          queryClient.invalidateQueries(['userInfo'])
           setIsLogIn(false)
         }
         if(res.status===204){
-          remove();
+          queryClient.invalidateQueries(['userInfo'])
+          setIsLogIn(false)
+        }else{
+          queryClient.invalidateQueries(['userInfo'])
           setIsLogIn(false)
         }
 
@@ -37,7 +40,7 @@ function LoginInfo() {
       
     return (
         <LoginContainer>
-          {isLogIn?(
+          {isLogIn&&data?(
             <>
               <Link href={'/mypage'}><Username>{data?.id}</Username></Link>
               <LoginButton onClick={handleLogout}>로그아웃</LoginButton>

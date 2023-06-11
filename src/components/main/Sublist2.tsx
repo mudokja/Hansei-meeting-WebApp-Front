@@ -33,6 +33,7 @@ const ButtonWrapper = styled.div`
   font-size: 0.85rem;
   font-weight: bold;
   position: relative;
+  word-break:keep-all;
 
   &:hover {
     .submenu {

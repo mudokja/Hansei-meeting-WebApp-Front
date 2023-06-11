@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getCookie, hasCookie, setCookie, deleteCookie } from 'cookies-next';
 
-const LOGINAPIURL='/post'
-const APIURL= `${process.env.APIENDPOINT}${LOGINAPIURL}` as string
+const POSTAPIURL='/post'
+const APIURL= `${process.env.APIENDPOINT}${POSTAPIURL}` as string
 type Data = {
 
     // succeed:boolean
@@ -20,13 +20,14 @@ export default async function handler(
   ) 
   {
     const seesionIDcookie = `sid=${getCookie('sid',{req,res}) as string}`;
-      console.log("게시글요청");
+    const {id} =req.query  
+    console.log("게시글요청");
       // console.log(reqDataJSON)
       // if(req.headers.location){
       //   res.redirect(req.headers.location)
       // }
       if (req.method === 'GET'){
-        const {id} =req.query
+        
         console.log('게시글보기')
             const options = {
               method:'get',
@@ -66,7 +67,6 @@ export default async function handler(
             } catch (error) {}
           }else if(req.method==='DELETE'){
           console.log("게시글 삭제응답")
-          const seesionIDcookie = `sid=${getCookie('sid',{req,res}) as string}`;
           const options = {
             method:'DELETE',
             headers:{
@@ -75,12 +75,14 @@ export default async function handler(
             
           };
           try {
-            const response = await fetch(APIURL, options);
+            const response = await fetch(`${APIURL}/${id}`, options);
             try {
               if(response.ok)
               {
-             
+                console.log("게시글 삭제성공")
+                res.status(200).end()
               }else{
+                console.log("게시글삭제실패 ")
                 res.status(404).end();
               }
             } catch (error) {

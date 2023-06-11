@@ -14,19 +14,31 @@ type Data = {
     // error?:string
 }
 
+function parsingDate(dateString:string){
+  const now = new Date();
+  const postDate=Date.parse(dateString)
+if (!isNaN(postDate)) {
+    const isToday = new Date(postDate).toISOString().slice(0, 10) === now.toISOString().slice(0, 10);
+    
+    const formattedDate = isToday
+    ? new Date(postDate).toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' })
+    : new Date(postDate).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' });
+    return formattedDate
+}else{
+    return dateString;
+}
+}
+
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<Data>
   ) 
   {
     const seesionIDcookie = `sid=${getCookie('sid',{req,res}) as string}`;
-      console.log("게시글요청");
       // console.log(reqDataJSON)
       
       if (req.method === 'GET'){
-          const {pages} =req.query 
-          console.log(pages)
-        console.log('게시글보기')
+          const {pages,licf} =req.query 
             const options = {
               method:'get',
               headers:{
@@ -35,33 +47,28 @@ export default async function handler(
             };
             try {
               
-              const response = await fetch(`${APIURL}?page=${pages ||1}`, options);
+              const response = await fetch(`${APIURL}?page=${pages ||1}&listcount=${licf ||20}`, options);
               try {
                 if(response.ok)
                 {
                   const result = await response.json();
-                  if(result.succeed){
-                    console.log(result)
-                    const passResult= {
-                      postid:result.data._id,
-                      author:result.data["작성자"],
-                      title:result.data["제목"],
-                      date: result.data["날짜"],
-                      content:result.data['내용']
-                    }
-                    res.status(200).json(result.data);
+                    const passResult:any[]= result.data.map((post:any)=>{
+                     return {postid:post._id,
+                      author:post["작성자"],
+                      title:post["제목"],
+                      date:parsingDate(post["날짜"]),
+                      content:post['내용'],}
+                    })
+                    res.status(200).json(passResult);
                   }
                     
-                }else{
-                  res.status(401).end();
-                }
               } catch (error) {
-                  console.log(error,'데이터 파싱에러')
+                  console.log(error,'데이터 요청에러')
                   res.status(401).end()
               }
               
             
-            } catch (error) {}
+            } catch (error) {console.log(error, "게시글 요청에러"), res.status(400).end()}
         } else 
         if (req.method === 'POST') {
             const {title,content} = req.body;
@@ -92,7 +99,7 @@ export default async function handler(
                 const result = await response.json();
         
                 console.log(result," 백엔드 요청에러")
-                res.status(500).end()
+                res.status(401).end()
                 }
             } catch (error) {
                 console.log(error,'데이터 파싱에러')
@@ -109,7 +116,8 @@ export default async function handler(
                 }
                 }
           }else if(req.method==='DELETE'){
-          console.log("게시글 삭제응답")
+            res.status(405).end()
+            return;
           const seesionIDcookie = `sid=${getCookie('sid',{req,res}) as string}`;
           const options = {
             method:'DELETE',

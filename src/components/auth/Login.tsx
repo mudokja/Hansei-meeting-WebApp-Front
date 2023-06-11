@@ -3,8 +3,9 @@ import {useCallback, useState} from "react";
 import styled from "styled-components";
 import { useForm, SubmitHandler  } from "react-hook-form";
 import { useRouter } from 'next/router';
+import { useQueryClient } from '@tanstack/react-query';
 
-const Container = styled.div`
+export const LoginContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -13,7 +14,7 @@ const Container = styled.div`
   background-color: #F6FEFF;
 `;
 
-const Card = styled.div`
+export const LoginCard = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -33,7 +34,7 @@ const FieldWapper=styled.div`
   width:530px;
 `;
 
-const Field = styled.input`
+export const Field = styled.input`
   width: 100%;
   padding: 12px;
   margin-top:8px;
@@ -43,12 +44,12 @@ const Field = styled.input`
   box-sizing:border-box;
 `;
 
-const StyledLabel=styled.label`
+export const StyledLabel=styled.label`
   font-weight:600;
   font-size:16;
 `;
 
-const LoginButton = styled.button`
+export const LoginButton = styled.button`
   background-color: #000000;
   color: #fff;
   padding: 12px;
@@ -79,13 +80,14 @@ const BottomLinkWrapper=styled.div`
   border:1px;
 `;
 
-const ErrorText= styled.span`
+export const ErrorText= styled.span`
   display:inline-block;
   color:chocolate;
   font-size:14px;
   text-decoration:none;
   height:8px;
   width:100%;
+  word-wrap:keep-all;
 `;
 interface LoginProps {
   userId:string;
@@ -96,6 +98,7 @@ function Login() {
     const router= useRouter()
     const [errorText, setErrorText]=useState('');
     const { register, formState:{errors,isSubmitting}, handleSubmit } = useForm<LoginProps>({mode:'onChange'});
+    const queryClient=useQueryClient()
     const onSubmit: SubmitHandler<LoginProps> =useCallback(async (e)=>{
       const data={
         username:e.userId,
@@ -116,10 +119,12 @@ function Login() {
         try {
           switch(response.status){
             case 201:
+              queryClient.invalidateQueries(['userInfo'])
               router.push(await response.text() )
               break;
             case 200:
               const result = await response.text();
+              break;
             }
         } catch (error) {
           console.log(error)
@@ -130,9 +135,9 @@ function Login() {
         }
     },[]) 
   return (
-    <Container>
+    <LoginContainer>
         <Title>다과회</Title>
-      <Card>
+      <LoginCard>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldWapper>
             <StyledLabel htmlFor='userId'>아이디</StyledLabel>
@@ -153,13 +158,13 @@ function Login() {
           <LoginButton type="submit">로그인</LoginButton>
           <BottomLinkWrapper>
             {/* 나중에 경로 채우기 */}
-            <Link href='/user/findingid' passHref legacyBehavior><PageLinkText>아이디 찾기</PageLinkText></Link>
-            <Link href='/user/findingpw' passHref legacyBehavior><PageLinkText>비밀번호 찾기</PageLinkText></Link>
+            <Link href='/auth/findingid' passHref legacyBehavior><PageLinkText>아이디 찾기</PageLinkText></Link>
+            <Link href='/auth/findingpw' passHref legacyBehavior><PageLinkText>비밀번호 찾기</PageLinkText></Link>
             <Link href='/auth/signup' passHref legacyBehavior><PageLinkText>회원가입</PageLinkText></Link>
           </BottomLinkWrapper>
         </form>
-      </Card>
-    </Container>
+      </LoginCard>
+    </LoginContainer>
   );
 }
 

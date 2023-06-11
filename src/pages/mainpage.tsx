@@ -1,6 +1,8 @@
 import Mainpage from '@/components/main/Mainpage';
 import React from 'react';
 import { dehydrate, QueryClient, useQuery } from '@tanstack/react-query'
+import { useGetPostsData } from '@/hook/usePostsData';
+import { Post } from '@/components/board/PartBoard';
 
 export async function getUserInfo(){
     const APIURL=`${process.env.NEXT_PUBLIC_URL}/api/${process.env.NEXT_PUBLIC_VAPI}/mypage`
@@ -14,14 +16,15 @@ export async function getUserInfo(){
             throw new Error()
         }
     } catch (error) {
-        console.log("에러")
+        return null
     }
     
 }
 
 function mainpage() {
+    const [freeData, isLoading, error ]= useGetPostsData({count:10});
     return (
-        <Mainpage />
+        <Mainpage freeData={freeData}/>
     );
 }
 // export async function getStaticProps() {
