@@ -6,7 +6,6 @@ import { useRouter } from 'next/router';
 import { SignUpButton } from '../auth/SignUp';
 import BoardHeader from '../board/BoardHeader';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { redirect } from 'next/dist/server/api-utils';
 
 const LoadingArea=styled.div`
   max-width:823px;
