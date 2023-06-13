@@ -1,6 +1,6 @@
 
 import Board from '@/components/Board';
-import { SignUpButton } from '@/components/auth/SignUp';
+import { SignUpButton, buttonCss } from '@/components/auth/SignUp';
 import BoardPageBar from '@/components/board/BoardPageBar';
 import PartBoard, { Post } from '@/components/board/PartBoard';
 import PostViewer from '@/components/post/PostViewer';
@@ -19,13 +19,13 @@ import BoardHeader from '@/components/board/BoardHeader';
 
 //const Viewer=dynamic(()=>import("@/components/post/PostViewer"),{ssr:false,loading: () => <p>글을 불러오는 중입니다</p>,})
 function postView({data: postData}:{data:any}) {
-  const [isPost, setIsPost] = useState(null);
   const { postid, author, title, date, content} = postData;
   const queryClient=useQueryClient()
   let viewContent = content;
   const [dateString, setDateString] = useParsingDate(date)
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
+  const [editMode, setEditMode]=useState(false)
   const [data, isLoading, error ]= useGetPostsData({pageNumber:currentPage})
   const { data:userData } = useQuery({ queryKey: ['userInfo'],staleTime:30000 ,queryFn:getUserInfo, retryDelay:300000, initialData:null, initialDataUpdatedAt:0})
   const handlePageClick = (number :number) => {
@@ -78,21 +78,27 @@ function postView({data: postData}:{data:any}) {
   //   return <div>Loading...</div>;
 //}
   const Viewer=useMemo(()=>dynamic(()=>import("@/components/post/PostViewer"),{ssr:false,loading: () => <p>글을 불러오는 중입니다</p>,}),[])
-
+  const Editor=useMemo(()=>dynamic(()=>import("@/components/post/PostForm"),{ssr:false,loading: () => <p>글을 불러오는 중입니다</p>,}),[])
   return (
     <>
     <BoardHeader/>
     <PostViewContainer>
       
       <ContentViewBox>
-        <PostTitle>{title}</PostTitle>
-        <Author>{author}</Author>
+        {editMode||(<>
+          <PostTitle>{title}</PostTitle>
+          <Author>{author}</Author>
+
         <PostDate>
           <span onClick={()=>{setDateString()}} >{dateString}</span>
         </PostDate>
-        <Viewer content={viewContent}/>
-        {userData?.id===author&&
+        </>)}
+        {editMode?<Editor editMode={true} postData={postData} handleEdit={setEditMode}/>:<Viewer content={viewContent}/>}
+        {editMode||userData?.id===author&&
+        <>
         <SignUpButton onClick={handlePostDelete}>삭제</SignUpButton>
+        <EditButton onClick={()=>setEditMode(true)} >수정</EditButton>
+        </>
         }
       </ContentViewBox>
       <Sidebar>
@@ -189,3 +195,7 @@ padding:12px;
 }
 
 `;
+const EditButton=styled.button`
+  ${buttonCss}
+  background-color:grey;
+`
