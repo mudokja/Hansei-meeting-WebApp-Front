@@ -36,7 +36,7 @@ export default async function handler(
                 studentId:result.user.studentId,
                 name:result.user.firstName+result.user.lastName,
               }
-              console.log(passResult)
+
               res.status(200).json(passResult);
             }else{
               console.log("백엔드 인증실패")

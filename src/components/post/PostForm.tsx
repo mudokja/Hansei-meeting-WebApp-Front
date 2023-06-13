@@ -4,8 +4,16 @@ import styled from 'styled-components';
 import { Path, useForm, UseFormRegister, SubmitHandler } from "react-hook-form";
 import { useRouter } from 'next/router';
 import { SignUpButton } from '../auth/SignUp';
+import BoardHeader from '../board/BoardHeader';
 
-const EditorSSR = dynamic(()=>import('@/components/post/PostEditor'),{ssr:false});
+const LoadingArea=styled.div`
+  max-width:823px;
+  width:630px;
+  min-height:400px;
+  background-color:white;
+`;
+
+const EditorSSR = dynamic(()=>import('@/components/post/PostEditor'),{ssr:false, loading: () => <LoadingArea></LoadingArea>});
 
 
 interface IPostInput {
@@ -13,15 +21,9 @@ interface IPostInput {
   content:string;
   tag?:string;
 }
-  
-type InputProps = {
-  label: Path<IPostInput>;
-  register: UseFormRegister<IPostInput>;
-  required: boolean;
-};
 
 const PostWriteContainer=styled.div`
-    display:block;
+    display:flex;
     justify-content:center;
     align-items:center;
     flex-direction:column;
@@ -35,11 +37,15 @@ const TextField = styled.input`
   width: 100%;
   padding: 4px;
   margin-top:8px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   border: 1px solid #bec3c7;
   border-left:0px;
+  font-size:16px;
   border-right:0px;
   box-sizing:border-box;
+  &:focus-visible{
+    outline-style:none;
+  }
 `;
 const StyledLabel=styled.label`
 `
@@ -90,23 +96,25 @@ function post() {
     const apiURL=`/api/${process.env.NEXT_PUBLIC_VAPI}/post`
  
     const response = await fetch(apiURL, options);
-    if(response.ok){
       try {
-        switch(response.status){
-          case 201:
-            const {url}= await response.json()
-            router.push(url)
-            break;
-          case 200:
-            const result = await response.text();
-            break;
+        if(response.ok){
+          const result= await response.text()
+          switch(response.status){
+            case 201:
+              const url = JSON.parse(result)
+              router.push(url.url)
+              break;
+            case 200:
+
+              break;
+            default:;
+          }
+          } else{
+            alert("권한이없습니다")
+            router.back()
           }
       } catch (error) {
         console.log(error)
-      }
-      
-      }else{
-        setErrorText("이메일 또는 비밀번호를 확인하세요");
       }
   },[]) 
    
@@ -114,12 +122,11 @@ function post() {
    
      
     return (
+      <>
+      <BoardHeader/>
       <PostWriteContainer>
-      <div>
-        둘만한 헤더가 있으면 위치할 영역 작성중인 게시판, 바로가기등
-      </div>
-      <h2>글쓰기</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
+        <TempHeader>{}게시판 글쓰기</TempHeader>
             <PostHeader>
               <StyledLabel >
                 <TextField type='text' placeholder='글제목'
@@ -135,7 +142,14 @@ function post() {
           
         </PostBottom>
       </PostWriteContainer>
+      </>
     );
 }
 
 export default post;
+
+const TempHeader= styled.div`
+  margin-top:18px;
+  margin-bottom:18px;
+  font-size:20px;
+`

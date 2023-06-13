@@ -16,7 +16,7 @@
 # production
 /build
 ecosystem.config.js
-
+deploy
 # misc
 .DS_Store
 *.pem

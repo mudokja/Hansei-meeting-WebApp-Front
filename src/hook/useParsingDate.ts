@@ -28,7 +28,6 @@ import React, { useEffect, useState } from 'react';
             formattedDate = isToday
             ? new Date(postDate).toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' })
             : new Date(postDate).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' });
-            console.log(formattedDate)
             
         }else{
             formattedDate=dateString;

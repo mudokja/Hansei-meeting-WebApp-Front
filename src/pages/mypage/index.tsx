@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { getCookie } from 'cookies-next';
+import { deleteCookie, getCookie, setCookie } from 'cookies-next';
 import { GetServerSidePropsContext } from 'next';
+import { ErrorText } from '@/components/auth/Login';
+import { useQueryClient } from '@tanstack/react-query';
 
 
 
@@ -126,20 +128,56 @@ const Contents: Content =
   }
 
 const RequestButton = styled.button` /*정보변경 버튼*/
-  width: 100%;
+  width: 5rem;
   font-size: 1rem;
+  font-weight:600;
+  padding:8 px;
+  align-self:center;
   margin-top: 10px;
   margin-bottom: 10px;
+  margin-right:10px;
   background-color: #f2f2f2;
   border: none;
   border-radius: 0.5rem;
+  word-break:keep-all;
   cursor: pointer;
 `;
 
 
 const Mypage = ({data}:{data:Content}) => {
   const router = useRouter();
-  
+  const [errorMessage, setErrorMessage]=useState('');
+  const queryClient=useQueryClient()
+  async function handleUserDelete(){
+    const APIURL=`${process.env.NEXT_PUBLIC_URL}/api/${process.env.NEXT_PUBLIC_VAPI}/signup`
+    const seesionIDcookie = `sid=${getCookie('sid') as string}`;
+    
+    const option ={
+      method:'DELETE',
+      headers:{
+        cookie:seesionIDcookie
+      },
+    }
+      const response = await fetch(APIURL,option)
+      if(response.ok){
+        try {
+          
+          const result = await response.text()
+          switch(response.status){
+            case 201:
+              queryClient.removeQueries(['userInfo'])
+              router.push(response.headers.get('Location') as string )
+              break;
+            case 404:
+              const text=JSON.parse(result)
+              setErrorMessage(text.error)
+              break;
+            }
+        } catch (error) {
+          console.log(error)
+        }
+        }
+      }
   return (
        <Div>
       <TitleBox>
@@ -150,7 +188,7 @@ const Mypage = ({data}:{data:Content}) => {
             <ContentContainer>
               <ContentTitle>내 정보</ContentTitle>
               <ContentText>이름: {data.name||"정보없음"}</ContentText>
-              <ContentText>아이디: {data.id}</ContentText>
+              <ContentText>아이디: {data.id||"미인증상태"}</ContentText>
               <ContentText>학과: {data.department||"정보없음"}</ContentText>
               <ContentText>학년: {data.grade||"정보없음"}</ContentText>
               <ContentText>학번: {data.studentId||"정보없음"}</ContentText>
@@ -162,12 +200,14 @@ const Mypage = ({data}:{data:Content}) => {
             <Image src="/meow.png" />
             </ImageBox>
             <CategoryBox4>
-            <Link href = {'/a'}><RequestButton>정보 변경</RequestButton>
-            </Link>
+            <RequestButton onClick={()=>{alert("준비 중입니다")}}>정보변경</RequestButton>
+            <RequestButton onClick={()=>{handleUserDelete(); setTimeout(()=>{setErrorMessage("")},5000 )}}>회원탈퇴</RequestButton>
+            {errorMessage&&(<ErrorText>{errorMessage}</ErrorText>)}
             </CategoryBox4>
           </CategoryBox3>
+          
         </CategoryBox>
-        
+        <RequestButton onClick={()=>router.back()}>돌아가기</RequestButton>
     </Div>
     
   );

@@ -1,10 +1,10 @@
+import FindUser from '@/components/auth/FindUser';
 import React from 'react';
 
 function findingpw() {
     return (
-        <div>
-            대충 비밀번호 찾기
-        </div>
+        
+        <FindUser findType='pw'/>
     );
 }
 

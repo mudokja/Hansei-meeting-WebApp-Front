@@ -5,7 +5,9 @@ import '@toast-ui/editor/dist/i18n/ko-kr';
 import styled from 'styled-components';
 
 const EditorWraper= styled.div`
-  width:100%;
+  max-width:823px;
+  width:630px;
+
 `
 type Props={
   content:string,
@@ -23,7 +25,14 @@ function PostEditor({content ='', onChange, editorRef}:Props) {
       previewStyle="vertical"
       placeholder="글을 작성해주세요"
       height="auto"
-      minHeight='200px'
+      minHeight='400px'
+      toolbarItems={[
+        ['heading', 'bold', 'italic', 'strike'],
+        ['hr', 'quote'],
+        ['ul', 'ol', 'task'],
+        ['table', 'link'],
+        ['code'],
+    ]}
       hideModeSwitch={true}
       onChange={()=>onChange(editorRef.current?.getInstance().getMarkdown())}
       initialEditType="wysiwyg"
