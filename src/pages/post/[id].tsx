@@ -1,9 +1,6 @@
-
-import Board from '@/components/Board';
 import { SignUpButton, buttonCss } from '@/components/auth/SignUp';
 import BoardPageBar from '@/components/board/BoardPageBar';
 import PartBoard, { Post } from '@/components/board/PartBoard';
-import PostViewer from '@/components/post/PostViewer';
 import useParsingDate from '@/hook/useParsingDate';
 import { useGetPostsData } from '@/hook/usePostsData';
 import { useQuery, useQueryClient } from '@tanstack/react-query';

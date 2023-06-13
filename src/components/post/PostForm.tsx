@@ -6,7 +6,6 @@ import { useRouter } from 'next/router';
 import { SignUpButton } from '../auth/SignUp';
 import BoardHeader from '../board/BoardHeader';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { redirect } from 'next/dist/server/api-utils';
 
 const LoadingArea=styled.div`
   max-width:823px;
@@ -96,7 +95,7 @@ function post({editMode=false, postData, handleEdit}:{editMode?:boolean,postData
       },
       body: JSONdata,
     };
-    const apiURL=editMode?`/api/${process.env.NEXT_PUBLIC_VAPI}/post/${postData.postid}`:`/api/${process.env.NEXT_PUBLIC_VAPI}/post`
+    const apiURL=editMode?`/api/${process.env.NEXT_PUBLIC_VAPI}/post/${postData?.postid}`:`/api/${process.env.NEXT_PUBLIC_VAPI}/post`
     
     const response = await fetch(apiURL, options);
       try {
@@ -110,7 +109,7 @@ function post({editMode=false, postData, handleEdit}:{editMode?:boolean,postData
               queryClient.invalidateQueries(['viewPosts'])
               handleEdit(false)
               router.push(`/post/edit-load-path`)
-              setTimeout(()=>{router.push(`/post/${postData.postid}`)},300)
+              setTimeout(()=>{router.push(`/post/${postData?.postid}`)},300)
               break;
             default:;
           }
@@ -135,7 +134,7 @@ function post({editMode=false, postData, handleEdit}:{editMode?:boolean,postData
             <PostHeader>
               <StyledLabel >
                 <TextField type='text' placeholder='글제목'
-                {...register("title",{ value:postData.title, required: "글제목을 입력해주세요" })}></TextField>
+                {...register("title",{ value:postData?.title||'', required: "글제목을 입력해주세요" })}></TextField>
               </StyledLabel>
             </PostHeader>
 
