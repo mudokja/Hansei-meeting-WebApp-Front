@@ -10,7 +10,6 @@ export async function getUserInfo(){
     try {
         if(response.ok){
             const result = await response.json()
-            console.log(result)
             return result   
         }else{
             throw new Error()

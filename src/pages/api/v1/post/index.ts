@@ -21,8 +21,8 @@ if (!isNaN(postDate)) {
     const isToday = new Date(postDate).toISOString().slice(0, 10) === now.toISOString().slice(0, 10);
     
     const formattedDate = isToday
-    ? new Date(postDate).toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' })
-    : new Date(postDate).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' });
+    ? new Date(postDate).toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' ,timeZone: 'Asia/Seoul'})
+    : new Date(postDate).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' ,timeZone: 'Asia/Seoul'});
     return formattedDate
 }else{
     return dateString;
@@ -73,7 +73,6 @@ export default async function handler(
         if (req.method === 'POST') {
             const {title,content} = req.body;
             const date =new Date().toISOString()
-            console.log(date)
             const reqFormData= new URLSearchParams();
             reqFormData.append('title',title)
             reqFormData.append('date',date)
@@ -93,7 +92,7 @@ export default async function handler(
                 {
                     const result = await response.json();
                     console.log('글쓰기 성공')
-                    res.status(201).json({url:'/post/'+result.postId})
+                    res.redirect(201,'/post/'+result.postId)
                 
                 }else{
                 const result = await response.json();
@@ -118,28 +117,28 @@ export default async function handler(
           }else if(req.method==='DELETE'){
             res.status(405).end()
             return;
-          const seesionIDcookie = `sid=${getCookie('sid',{req,res}) as string}`;
-          const options = {
-            method:'DELETE',
-            headers:{
-              cookie:seesionIDcookie
-            }
+        //   const seesionIDcookie = `sid=${getCookie('sid',{req,res}) as string}`;
+        //   const options = {
+        //     method:'DELETE',
+        //     headers:{
+        //       cookie:seesionIDcookie
+        //     }
             
-          };
-          try {
-            const response = await fetch(APIURL, options);
-            try {
-              if(response.ok)
-              {
+        //   };
+        //   try {
+        //     const response = await fetch(APIURL, options);
+        //     try {
+        //       if(response.ok)
+        //       {
              
-              }else{
-                res.status(404).end();
-              }
-            } catch (error) {
-                console.log('데이터 파싱에러')
-                res.status(401).end()
-            }
-        } catch{res.status(404).end();}
+        //       }else{
+        //         res.status(404).end();
+        //       }
+        //     } catch (error) {
+        //         console.log('데이터 파싱에러')
+        //         res.status(401).end()
+        //     }
+        // } catch{res.status(404).end();}
       } else {
           console.log("비정상접근");
           res.status(400).end()

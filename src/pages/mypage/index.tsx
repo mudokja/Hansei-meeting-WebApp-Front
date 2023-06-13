@@ -225,7 +225,6 @@ const Mypage = ({data}:{data:Content}) => {
   try{
     const res = await fetch(apiURL,option);
     const result = await res.json();
-    console.log(result)
     return {props:{data:result}}
   }catch{
     return { props: {data: Contents} };

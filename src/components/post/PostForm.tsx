@@ -5,6 +5,8 @@ import { Path, useForm, UseFormRegister, SubmitHandler } from "react-hook-form";
 import { useRouter } from 'next/router';
 import { SignUpButton } from '../auth/SignUp';
 import BoardHeader from '../board/BoardHeader';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { redirect } from 'next/dist/server/api-utils';
 
 const LoadingArea=styled.div`
   max-width:823px;
@@ -73,12 +75,13 @@ const onSubmit = async (data: any) => {
     }
   };
 
-function post() {
+function post({editMode=false, postData, handleEdit}:{editMode?:boolean,postData?:any, handleEdit?:any}) {
   const router= useRouter()
+  const queryClient=useQueryClient()
   const [errorText, setErrorText]=useState('');
   const { register, formState:{errors,isSubmitting}, handleSubmit } = useForm<IPostInput>({mode:'onChange'});
   const ediRef=useRef<any>(null);
-  const [content, setContent]=useState(' ')
+  const [content, setContent]=useState(editMode?postData.content:' ')
   // const ViewerSSR =useMemo(()=>dynamic(()=>import("@/components/post/PostViewer"),{ssr:false}),[content]); //테스트코드
   const onSubmit: SubmitHandler<IPostInput> =useCallback(async (e)=>{
     const data={
@@ -87,25 +90,27 @@ function post() {
     }
     const JSONdata = JSON.stringify(data);
     const options = {
-      method: 'POST',
+      method: editMode?'PUT':'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSONdata,
     };
-    const apiURL=`/api/${process.env.NEXT_PUBLIC_VAPI}/post`
- 
+    const apiURL=editMode?`/api/${process.env.NEXT_PUBLIC_VAPI}/post/${postData.postid}`:`/api/${process.env.NEXT_PUBLIC_VAPI}/post`
+    
     const response = await fetch(apiURL, options);
       try {
         if(response.ok){
           const result= await response.text()
           switch(response.status){
             case 201:
-              const url = JSON.parse(result)
-              router.push(url.url)
+              router.push(result)
               break;
             case 200:
-
+              queryClient.invalidateQueries(['viewPosts'])
+              handleEdit(false)
+              router.push(`/post/edit-load-path`)
+              setTimeout(()=>{router.push(`/post/${postData.postid}`)},300)
               break;
             default:;
           }
@@ -123,24 +128,24 @@ function post() {
      
     return (
       <>
-      <BoardHeader/>
+      {editMode||(<BoardHeader/>)}
       <PostWriteContainer>
         <form onSubmit={handleSubmit(onSubmit)}>
-        <TempHeader>{}게시판 글쓰기</TempHeader>
+        {editMode||(<TempHeader>{"자유"}게시판 글쓰기</TempHeader>)}
             <PostHeader>
               <StyledLabel >
                 <TextField type='text' placeholder='글제목'
-                {...register("title",{ required: "글제목을 입력해주세요" })}></TextField>
+                {...register("title",{ value:postData.title, required: "글제목을 입력해주세요" })}></TextField>
               </StyledLabel>
             </PostHeader>
 
             <EditorSSR content={content} onChange={setContent} editorRef={ediRef} />
              {/* <ViewerSSR content={content} /> 테스트코드 */}
-            <SignUpButton type="submit">글쓰기</SignUpButton>
+            <SignUpButton type="submit">{editMode?'글수정하기':'글쓰기'}</SignUpButton>
         </form>
-        <PostBottom>
+        {editMode||(<PostBottom>
           
-        </PostBottom>
+        </PostBottom>)}
       </PostWriteContainer>
       </>
     );
